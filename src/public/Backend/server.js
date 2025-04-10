@@ -1,28 +1,24 @@
 const express = require("express");
 const http = require("http");
-const socketIo = require("socket.io");
+const socketIO = require("socket.io");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
-
 const server = http.createServer(app);
-const io = socketIo(server, {
+const io = socketIO(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
   }
 });
 
+app.use(cors());
+
 io.on("connection", (socket) => {
   console.log("New client connected");
 
-  socket.on("traineeJoined", (name) => {
-    console.log(`${name} joined`);
-  });
-
-  socket.on("typing", ({ name, text }) => {
-    socket.broadcast.emit("typing", { name, text });
+  socket.on("typing", (data) => {
+    socket.broadcast.emit("receive_typing", data);
   });
 
   socket.on("disconnect", () => {
@@ -30,6 +26,5 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(5000, () => {
-  console.log("Server running on http://localhost:5000");
-});
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

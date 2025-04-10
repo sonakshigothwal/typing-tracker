@@ -1,85 +1,42 @@
-import React, { useState, useEffect } from "react";
+// src/TraineeView.js
+import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://your-server-url"); // Replace with your actual backend URL
 
 function TraineeView() {
-  const [name, setName] = useState("");
+  const [traineeName, setTraineeName] = useState("");
   const [text, setText] = useState("");
-  const [receivedText, setReceivedText] = useState("");
-  const [whoIsTyping, setWhoIsTyping] = useState("");
+  const sampleText = "The quick brown fox jumps over the lazy dog.";
 
   useEffect(() => {
-    socket.on("receiveTyping", ({ name, text }) => {
-      setReceivedText(text);
-      setWhoIsTyping(name);
-    });
+    socket.emit("trainee-joined", traineeName);
+  }, [traineeName]);
 
-    socket.on("userStoppedTyping", () => {
-      setWhoIsTyping("");
-      setReceivedText("");
-    });
-
-    return () => {
-      socket.off("receiveTyping");
-      socket.off("userStoppedTyping");
-    };
-  }, []);
-
-  const handleTyping = (e) => {
-    const typedText = e.target.value;
-    setText(typedText);
-    if (name) {
-      socket.emit("typing", { name, text: typedText });
-    }
-    if (typedText === "") {
-      socket.emit("stopTyping");
-    }
-  };
-
-  const handleNameSubmit = (e) => {
-    e.preventDefault();
-    if (name.trim()) {
-      alert(`Welcome, ${name}!`);
-    }
-  };
+  useEffect(() => {
+    socket.emit("typing", { name: traineeName, text });
+  }, [text]);
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial" }}>
-      <h2>✍️ Real-Time Typing Tracker - Trainee View</h2>
-
-      {!name ? (
-        <form onSubmit={handleNameSubmit}>
-          <input
-            type="text"
-            placeholder="Enter your name"
-            onChange={(e) => setName(e.target.value)}
-          />
-          <button type="submit">Join</button>
-        </form>
-      ) : (
-        <>
-          <h4>Welcome, {name}</h4>
-          <textarea
-            rows={5}
-            cols={50}
-            placeholder="Start typing..."
-            value={text}
-            onChange={handleTyping}
-          />
-        </>
-      )}
-
-      {whoIsTyping && whoIsTyping !== name && (
-        <p>👀 {whoIsTyping} is typing...</p>
-      )}
-
-      {receivedText && (
-        <div style={{ marginTop: "1rem" }}>
-          <strong>Live Preview from Others:</strong>
-          <p>{receivedText}</p>
-        </div>
-      )}
+    <div style={{ padding: "1rem" }}>
+      <h2>Live Trainee Typing Tracker</h2>
+      <input
+        type="text"
+        value={traineeName}
+        onChange={(e) => setTraineeName(e.target.value)}
+        placeholder="Enter your name"
+        style={{ marginBottom: "1rem", display: "block" }}
+      />
+      <p><strong>Type this:</strong></p>
+      <p>{sampleText}</p>
+      <textarea
+        rows="4"
+        cols="50"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Start typing here..."
+        disabled={!traineeName}
+      />
     </div>
   );
 }

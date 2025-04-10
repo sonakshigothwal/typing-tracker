@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Link } from "react-router-dom";
 import TraineeView from "./TraineeView"; // You'll create this file
 import TrainerView from "./TrainerView"; // You'll create this too
 

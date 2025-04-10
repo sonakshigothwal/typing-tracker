@@ -1,44 +1,44 @@
-// src/TraineeView.js
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 
-const socket = io("https://your-server-url"); // Replace with your actual backend URL
+const socket = io("https://typing-tracker.onrender.com");
 
-function TraineeView() {
-  const [traineeName, setTraineeName] = useState("");
+const TraineeView = () => {
+  const [name, setName] = useState("");
   const [text, setText] = useState("");
-  const sampleText = "The quick brown fox jumps over the lazy dog.";
 
   useEffect(() => {
-    socket.emit("trainee-joined", traineeName);
-  }, [traineeName]);
+    socket.emit("joinTrainee", name);
+  }, [name]);
 
-  useEffect(() => {
-    socket.emit("typing", { name: traineeName, text });
-  }, [text]);
+  const handleInput = (e) => {
+    const value = e.target.value;
+    setText(value);
+    socket.emit("typing", { name, text: value });
+  };
 
   return (
-    <div style={{ padding: "1rem" }}>
-      <h2>Live Trainee Typing Tracker</h2>
+    <div style={{ padding: "2rem" }}>
+      <h2>Trainee View</h2>
       <input
         type="text"
-        value={traineeName}
-        onChange={(e) => setTraineeName(e.target.value)}
-        placeholder="Enter your name"
-        style={{ marginBottom: "1rem", display: "block" }}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Enter your full name"
+        style={{ padding: "0.5rem", marginBottom: "1rem", width: "300px" }}
       />
-      <p><strong>Type this:</strong></p>
-      <p>{sampleText}</p>
+      <br />
       <textarea
-        rows="4"
-        cols="50"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
+        rows={5}
+        cols={50}
         placeholder="Start typing here..."
-        disabled={!traineeName}
+        value={text}
+        onChange={handleInput}
+        disabled={!name}
+        style={{ padding: "0.5rem" }}
       />
     </div>
   );
-}
+};
 
 export default TraineeView;

@@ -1,41 +1,35 @@
 import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://typing-tracker.onrender.com");
 
-function TrainerView() {
-  const [whoIsTyping, setWhoIsTyping] = useState("");
-  const [receivedText, setReceivedText] = useState("");
+const TrainerView = () => {
+  const [typingData, setTypingData] = useState({});
 
   useEffect(() => {
     socket.on("receiveTyping", ({ name, text }) => {
-      setWhoIsTyping(name);
-      setReceivedText(text);
-    });
-
-    socket.on("userStoppedTyping", () => {
-      setWhoIsTyping("");
-      setReceivedText("");
+      setTypingData((prev) => ({
+        ...prev,
+        [name]: text
+      }));
     });
 
     return () => {
       socket.off("receiveTyping");
-      socket.off("userStoppedTyping");
     };
   }, []);
 
   return (
-    <div style={{ padding: "2rem", fontFamily: "Arial" }}>
-      <h2>👀 Trainer View</h2>
-      {whoIsTyping ? <p><strong>{whoIsTyping}</strong> is typing...</p> : <p>No one is typing</p>}
-      {receivedText && (
-        <div>
-          <strong>Live Preview:</strong>
-          <p>{receivedText}</p>
+    <div style={{ padding: "2rem" }}>
+      <h2>Trainer View</h2>
+      {Object.entries(typingData).map(([name, text]) => (
+        <div key={name} style={{ marginBottom: "1.5rem" }}>
+          <strong>{name}</strong>
+          <p style={{ border: "1px solid #ccc", padding: "1rem" }}>{text}</p>
         </div>
-      )}
+      ))}
     </div>
   );
-}
+};
 
 export default TrainerView;

@@ -1,28 +1,31 @@
 const express = require("express");
 const http = require("http");
-const socketIO = require("socket.io");
 const cors = require("cors");
+const { Server } = require("socket.io");
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIO(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
-});
-
 app.use(cors());
 
-io.on("connection", (socket) => {
-  console.log("New client connected");
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
-  socket.on("typing", (data) => {
-    socket.broadcast.emit("receive_typing", data);
+io.on("connection", (socket) => {
+  console.log("A user connected");
+
+  socket.on("joinTrainee", (name) => {
+    console.log(`${name} joined as trainee`);
+  });
+
+  socket.on("typing", ({ name, text }) => {
+    io.emit("receiveTyping", { name, text });
   });
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected");
+    console.log("User disconnected");
   });
 });
 

@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/typing-tracker/static/css/main.e6c13ad2.css",
+    "main.js": "/typing-tracker/static/js/main.613d7987.js",
+    "static/js/488.724a53ad.chunk.js": "/typing-tracker/static/js/488.724a53ad.chunk.js",
+    "index.html": "/typing-tracker/index.html",
+    "main.e6c13ad2.css.map": "/typing-tracker/static/css/main.e6c13ad2.css.map",
+    "main.613d7987.js.map": "/typing-tracker/static/js/main.613d7987.js.map",
+    "488.724a53ad.chunk.js.map": "/typing-tracker/static/js/488.724a53ad.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.613d7987.js"
+  ]
+}
